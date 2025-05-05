@@ -6,23 +6,21 @@ public class ATMApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println(" Välkommen till ATM-simulatorn");
-        System.out.println("Välj valuta:");
-        System.out.println("1. SEK (kr)");
-        System.out.println("2. USD ($)");
-        System.out.println("3. EUR (€)");
-        System.out.print("Val: ");
-        String input = scanner.nextLine();
+        // Be om användarnamn
+        System.out.print("Skriv ditt namn: ");
+        String userName = scanner.nextLine().trim();
 
-        Currency currency = switch (input) {
-            case "2" -> Currency.USD;
-            case "3" -> Currency.EUR;
-            default -> Currency.SEK;
-        };
+        // Skapa konto med 0 kr start och SEK som valuta
+        Currency currency = Currency.SEK;
+        Account account = new Account(userName, 0.0, currency);
 
-        // Startsaldo och konto med vald valuta
-        Account account = new Account(1000, currency);
+        // Starta databasanslutning
+        Database.connect();
+
         ATM atm = new ATM(account);
         atm.start();
+
+        // Stäng anslutning när användaren avslutar
+        Database.disconnect();
     }
 }

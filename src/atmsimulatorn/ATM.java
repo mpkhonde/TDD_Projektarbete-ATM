@@ -3,11 +3,11 @@ package atmsimulatorn;
 import java.util.Scanner;
 
 public class ATM {
-    private final Account account;
+    private Account account;
     private final Scanner scanner = new Scanner(System.in);
 
     public ATM(Account account) {
-        this.account = account;
+        this.account = account; // FIX: korrekt tilldelning
     }
 
     public void start() {
@@ -23,16 +23,12 @@ public class ATM {
             System.out.println("3  Ta ut");
             System.out.println("4  Visa kvitto");
             System.out.println("5  Avsluta");
+            System.out.println("6  Visa historik från databas");
+            System.out.println("7  Rensa databasen (ta bort alla transaktioner)");
             System.out.println("────────────────────────");
-            System.out.print("Välj ett alternativ (1–5): ");
+            System.out.print("Välj ett alternativ (1–7): ");
 
             String choice = scanner.nextLine().trim();
-
-            if (!choice.matches("[1-5]")) {
-                System.out.println(" Ogiltigt val. Försök igen.");
-                pause();
-                continue;
-            }
 
             switch (choice) {
                 case "1" -> {
@@ -62,7 +58,7 @@ public class ATM {
                     pause();
                 }
                 case "4" -> {
-                    System.out.println("\n Transaktionshistorik:");
+                    System.out.println("\n Transaktionshistorik (session):");
                     System.out.println("────────────────────────");
                     if (account.getHistory().isEmpty()) {
                         System.out.println("Inga transaktioner hittades.");
@@ -77,6 +73,29 @@ public class ATM {
                 case "5" -> {
                     System.out.println("\n Tack för att du använde ATM-simulatorn!");
                     running = false;
+                }
+                case "6" -> {
+                    System.out.println("\n Transaktioner från databas:");
+                    Database.connect(); // Anslut till databas
+                    Database.printAllTransactions();
+                    Database.disconnect();
+                    pause();
+                }
+                case "7" -> {
+                    System.out.print(" Är du säker? (j/n): ");
+                    String confirm = scanner.nextLine().trim().toLowerCase();
+                    if (confirm.equals("j")) {
+                        Database.connect();
+                        Database.clearTransactions();
+                        Database.disconnect();
+                    } else {
+                        System.out.println(" Avbrutet.");
+                    }
+                    pause();
+                }
+                default -> {
+                    System.out.println(" Ogiltigt val. Försök igen.");
+                    pause();
                 }
             }
         }
